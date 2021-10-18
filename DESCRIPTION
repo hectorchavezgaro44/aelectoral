@@ -13,3 +13,5 @@ RoxygenNote: 7.1.1
 Imports: 
     dplyr,
     magrittr
+URL: https://github.com/hectorchavezgaro44/aelectoral
+BugReports: https://github.com/hectorchavezgaro44/aelectoral/issues
