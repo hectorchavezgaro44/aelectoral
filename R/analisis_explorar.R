@@ -9,28 +9,27 @@
 #' @param eleccion_contraste elección o vector de elecciones contra los que se comparan
 #' la elecciones de referencia.
 #'
-#' @return
+#' @return base con diferencias
 #' @export
-#'
+#' @import dplyr magrittr
 #' @examples
-#'
-#' calcular_diferencias(eleccion_2021_edomex, c(pri, pan, morena, prd), c("df_21", "dl_21"), "pm_21" )
+
 calcular_diferencias <- function(bd, partido, eleccion_referencia, eleccion_contraste){
-  res <- map(partido,
+  res <- purrr::map(partido,
              ~   {
                eleccion_referencia <- paste("ele", .x, eleccion_referencia, sep = "_")
                eleccion_contraste <- paste("ele", .x, eleccion_contraste, sep="_")
-               bd <- map(eleccion_contraste,
+               bd <- purrr::map(eleccion_contraste,
                          ~ {
                            bd %>%
                              mutate("dif_{stringr::str_remove(eleccion_referencia, 'ele_')}_{stringr::str_sub(string = .x, start = -5, end = -1)}":=!!sym(eleccion_referencia)-!!sym(.x))
                          }
                ) %>%
-                 reduce(full_join)
+                 purrr::reduce(full_join)
                return(bd)
 
              })%>%
-    reduce(full_join) %>%
+    purrr::reduce(full_join) %>%
     as_tibble()
   return(res)
 }
