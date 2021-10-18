@@ -8,7 +8,7 @@ Resultado de las diferencias entre elecciones, eligiendo una como contraste}
 calcular_diferencias(bd, partido, eleccion_referencia, eleccion_contraste)
 }
 \arguments{
-\item{bd}{base de datos electoral}
+\item{bd}{base de datos con resultados electorales}
 
 \item{partido}{partidos o vector de partidos (ver base de datos de partidos)}
 
@@ -18,9 +18,14 @@ calcular_diferencias(bd, partido, eleccion_referencia, eleccion_contraste)
 la elecciones de referencia.}
 }
 \value{
-base con diferencias
+base con una columna de diferencias y  con el prefijo "dif_"
 }
 \description{
 Title
 Resultado de las diferencias entre elecciones, eligiendo una como contraste
+}
+\examples{
+#NOT RUN
+#calcular_diferencias(edomex::edomex_final, partido = c("pvem", "pt"),
+#eleccion_referencia =  "df_21", eleccion_contraste = c("dl_21", "pm_21"))
 }
