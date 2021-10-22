@@ -2,7 +2,8 @@
 % Please edit documentation in R/analisis_explorar.R
 \name{calcular_votos_totales}
 \alias{calcular_votos_totales}
-\title{Title}
+\title{Title
+Obtiene el total de votos obtenidos por partido}
 \usage{
 calcular_votos_totales(bd, partido, eleccion, grupo = NULL)
 }
@@ -13,11 +14,12 @@ calcular_votos_totales(bd, partido, eleccion, grupo = NULL)
 
 \item{eleccion}{elección o vector de elecciones de la cual se van a obtener los totales}
 
-\item{grupo}{}
+\item{grupo}{nivel de observación de la gráfica (secciones, municipios, distritos)}
 }
 \value{
 base de datos con cada una de las votaciones totales por partido en las elecciones solicitadas
 }
 \description{
 Title
+Obtiene el total de votos obtenidos por partido
 }

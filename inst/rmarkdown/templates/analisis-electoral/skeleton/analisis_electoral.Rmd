@@ -1,0 +1,310 @@
+---
+title: "Análisis electoral 2021"
+subtitle: "Estado de México"  
+author: 
+date: "Octubre 2021"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+      
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=4, fig.retina=3,
+  out.width = "100%",
+  cache = T,
+  echo = F,
+  message = FALSE, 
+  warning = FALSE,
+  hiline = TRUE,
+  fig.showtext = T
+)
+```
+
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+# devtools::load_all("~/Documents/Paquetes/edomex/.")
+library(tidyverse)
+library(sf)
+library(patchwork)
+library(shades)
+library(ggsankey)
+library(gt)
+library(knitr)
+library(corrr)
+style_duo_accent(
+  primary_color = "#961B41",
+  secondary_color = "#C4D460",
+  inverse_header_color = "#5B091C",
+  
+)
+tamaño_texto <- 8
+base <- edomex::edomex_final %>% 
+        mutate(ele_panal_df_21=0)
+
+devtools::load_all()
+```
+
+
+```{r datos}
+colores_partidos <- c("mc"="#fd8204", "morena"="#BF3722",
+                      "pan"="#2260BF", "prd"="#ffde00", 
+                      "pri"="#23A95D")
+elecciones_21 <- paste(c("df", "dl", "pm"), "21", sep="_")
+comparadas <- c("gb_17", "pr_18", "df_21")
+fondo_obscuro <- "#"
+mapa <- st_read("~/Downloads/15-MEXICO/SECCION.shp",
+                stringsAsFactors = FALSE, quiet = TRUE) %>%
+  st_transform(4326) %>%
+  janitor::clean_names()
+mapa_mun <- st_read("~/Downloads/15-MEXICO/MUNICIPIO.shp",
+                stringsAsFactors = FALSE, quiet = TRUE) %>%
+  st_transform(4326) %>%
+  janitor::clean_names()
+partidos <- names(colores_partidos)
+diferencias <- calcular_diferencias(base, 
+                                    partido = c(names(colores_partidos),
+                                                "pvem", "pt", "pes", "rsp",
+                                                "total", "panal", "fxm"),
+                                    eleccion_referencia =  "df_21", 
+                                    eleccion_contraste = c("dl_21", "pm_21"))
+```
+
+---
+## Votación por partido
+
+```{r}
+(g_totales <- graficar_totales_eleccion(bd = base, 
+                                        colores_nombrados =   colores_partidos, 
+                                        eleccion = elecciones_21)+
+   xaringanthemer::theme_xaringan(text_font_size = tamaño_texto, ) +
+   theme(panel.grid.major.x = element_blank()))
+```
+---
+# Diferencias con la elección DF
+
+
+
+```{r}
+diferencias_largo <- diferencias %>% 
+  select(starts_with("dif_")) %>% 
+  pivot_longer(everything(),
+               names_to = c("partido","e_ref", "a_ref", "e_con", "a_con"),
+               names_prefix = "dif_",names_sep = "_",
+               values_to = "diferencia")
+tabla <- diferencias_largo %>% 
+  mutate(referencia=toupper(paste(e_ref, a_ref, sep = "-")),
+         contraste=toupper(paste(e_con, a_con, sep = "-")),
+         ) %>% 
+  group_by(partido,  referencia, contraste) %>% 
+  summarise(diferencia=sum(diferencia, na.rm=T)) %>% 
+  mutate(diferencia=-diferencia) %>% 
+  pivot_wider(names_from =  "contraste",
+              values_from = "diferencia") %>% 
+  arrange(desc(abs(`DL-21`))) %>% 
+  mutate(across(ends_with("-21"), ~scales::comma(.x, 1))) %>% 
+  ungroup() %>% 
+  select(-referencia) 
+  
+knitr::kable(tabla, format = 'html')
+  
+```
+
+
+
+---
+
+##  Mapa electoral MORENA   
+
+```{r}
+mapas_felectoral <- graficar_cloropeta(bd = edomex::edomex_final,shp = mapa, 
+                                       colores_nombrados = colores_partidos,
+                                       eleccion =  elecciones_21,
+                                       grupo = seccion) 
+mapas_morena <- reduce(mapas_felectoral[grep(x = names(mapas_felectoral), "morena.",value = T)],
+                       `+`)
+mapas_morena & xaringanthemer::theme_xaringan(background_color = "#383b3b",
+                                              accent_color = "#C4D460") +
+  theme(panel.grid = element_blank(), plot.background = element_rect(fill="#383b3b"),
+        axis.text = element_blank()) 
+```
+
+---
+
+
+## Mapa electoral PRI
+
+```{r}
+mapas_pri <- reduce(mapas_felectoral[grep(x = names(mapas_felectoral), "pri.",value = T)],
+                    `+`)
+mapas_pri & xaringanthemer::theme_xaringan(background_color = "#383b3b",
+                                           accent_color = "#C4D460") +
+  theme(panel.grid = element_blank(), plot.background = element_rect(fill="#383b3b"),
+        axis.text = element_blank()) 
+```
+
+---
+
+
+## Mapa electoral PAN
+
+```{r}
+mapas_pan <- reduce(mapas_felectoral[grep(x = names(mapas_felectoral), "pan.",value = T)],
+                    `+`)
+mapas_pan & xaringanthemer::theme_xaringan(background_color = "#383b3b",
+                                           accent_color = "#C4D460") +
+  theme(panel.grid = element_blank(), plot.background = element_rect(fill="#383b3b"),
+        axis.text = element_blank())  
+```
+
+---
+
+# Ganadores por elección
+
+```{r}
+
+graficar_sankey_ganadores(bd=edomex::edomex_final, eleccion=elecciones_21, grupo=seccion) +
+  theme_xaringan()+
+  theme(panel.grid = element_blank(),
+        axis.text.y = element_blank(),
+        axis.title.x = element_blank())
+```
+
+
+
+---
+
+# Brújula electoral
+
+```{r}
+ja <- crear_mapa_electoral(base,eleccion=c("df_21", "dl_21", "pm_21"),
+                           año="2021",partido = names(colores_partidos),
+                           grupo = seccion)
+ja$gráfico
+```
+---
+## Fuerza electoral por ganador 
+```{r}
+bd_ganadores <- edomex::colorear_ganador_degradado(bd = edomex::edomex_final %>% 
+                                             calcular_votos_relativos(partido = c("mc", "morena", "pan", "prd", "pri"),
+                                                                      eleccion = elecciones_21,
+                                                                      grupo = seccion),
+                                           eleccion = "df_21",
+                                           colores_nombrados = c("mc"="#fd8204", "morena"="#BF3722",
+                                                                 "pan"="#2260BF", "prd"="#ffde00", 
+                                                                 "pri"="#23A95D"),grupo = seccion,saturacion = .9)
+df21_mapa<- mapa %>% 
+  janitor::clean_names() %>% 
+  left_join(bd_ganadores) %>% 
+  ggplot() + geom_sf(aes(fill=color_ganador), size=0) +
+  scale_fill_identity() +
+  xaringanthemer::theme_xaringan(background_color = "#383b3b",
+                                 accent_color = "#C4D460") +
+  labs(title="DF")+
+  theme(panel.grid = element_blank(), plot.background = element_rect(fill="#383b3b"),
+        axis.text = element_blank()) 
+bd_ganadores <- edomex::colorear_ganador_degradado(bd = edomex::edomex_final %>% 
+                                             calcular_votos_relativos(partido = c("mc", "morena", "pan", "prd", "pri"),
+                                                                      eleccion = elecciones_21,
+                                                                      grupo = seccion),
+                                           eleccion = "dl_21",
+                                           colores_nombrados = c("mc"="#fd8204", "morena"="#BF3722",
+                                                                 "pan"="#2260BF", "prd"="#ffde00", 
+                                                                 "pri"="#23A95D"),grupo = seccion,saturacion = .9)
+dl21_mapa<- mapa %>% 
+  janitor::clean_names() %>% 
+  left_join(bd_ganadores) %>% 
+  ggplot() + geom_sf(aes(fill=color_ganador), size=0) +
+  scale_fill_identity() +
+  xaringanthemer::theme_xaringan(background_color = "#383b3b",
+                                 accent_color = "#C4D460") +
+  labs(title="DL")+
+  theme(panel.grid = element_blank(), plot.background = element_rect(fill="#383b3b"),
+        axis.text = element_blank()) 
+bd_ganadores <- edomex::colorear_ganador_degradado(bd = edomex::edomex_final %>% 
+                                             calcular_votos_relativos(partido = c("mc", "morena", "pan", "prd", "pri"),
+                                                                      eleccion = elecciones_21,
+                                                                      grupo = seccion),
+                                           eleccion = "pm_21",
+                                           colores_nombrados = c("mc"="#fd8204", "morena"="#BF3722",
+                                                                 "pan"="#2260BF", "prd"="#ffde00", 
+                                                                 "pri"="#23A95D"),grupo = seccion,saturacion = .9)
+pm21_mapa<- mapa %>% 
+  janitor::clean_names() %>% 
+  left_join(bd_ganadores) %>% 
+  ggplot() + geom_sf(aes(fill=color_ganador), size=0) +
+  scale_fill_identity() +
+  labs(title="PM")+
+  xaringanthemer::theme_xaringan(background_color = "#383b3b",
+                                 accent_color = "#C4D460") +
+  theme(panel.grid = element_blank(), plot.background = element_rect(fill="#383b3b"),
+        axis.text = element_blank()) 
+df21_mapa +dl21_mapa+pm21_mapa
+```
+
+
+---
+class: center, middle, inverse
+# Entendiendo las diferencias en la votación de MORENA 
+
+---
+
+# Autocorrelación
+```{r}
+bd <- calcular_votos_relativos(bd=edomex::edomex_final, 
+                               partido=c("morena", "pan", "pri", "prd", "mc"), 
+                               eleccion=c("dl_21", "df_21", "pm_21"), 
+                               grupo = seccion) %>% 
+      filter(seccion!=0) %>% 
+      select(-seccion) %>% 
+      correlate() %>% 
+      stretch(remove.dups = T, na.rm=T) %>% 
+       mutate(x=gsub("ele_", "", x),
+              x=gsub("_21", "", x),
+              y=gsub("ele_", "", y),
+              y=gsub("_21", "", y)) %>% 
+       separate(x, c("partido_1", "eleccion_1")) %>% 
+       separate(y, c("partido_2", "eleccion_2")) %>% 
+       filter(partido_1==partido_2) %>% 
+       mutate(elecc=paste(eleccion_1, eleccion_2, sep=" "), 
+              elecc=if_else(elecc=="df pm", "DF vs. \nPM",
+                    if_else(elecc=="dl df", "DL vs. \nDF",
+                            "DL vs. \nPM")), 
+              orden=if_else(partido_1=="morena", 1, 
+                    if_else(partido_1=="pri", 2, 
+                    if_else(partido_1=="pan", 3, 
+                    if_else(partido_1=="prd",4, 5)))), 
+              orden=factor(orden, labels=c("morena", "pri", "pan", "prd", "mc")))
+bd  %>% 
+  ggplot() +
+  # geom_bar(aes(x=as.numeric(as.factor(elecc)),
+  #              y=1), fill="grey", stat = "identity") +
+  geom_bar(aes(x=elecc,
+               y=r, fill=orden), stat = "identity", alpha=.9) +
+  facet_wrap(~orden) +
+  scale_fill_manual(values = c("mc"="#fd8204", "morena"="#BF3722",
+                               "pan"="#2260BF", "prd"="#ffde00", 
+                               "pri"="#23A95D")) +
+  ggfittext::geom_bar_text(outside = T,contrast = T,
+                           aes(x=elecc,
+                               y=r,label=round(r, 3))) +
+  labs(title="",
+      x="", y="Correlación")+
+  # annotate(y=0, x=-3, label=100, geom="text")+
+  # lims(y=c(0,1), 
+  #      x=c(-4,4))+
+  # coord_polar(theta = "y") + 
+  theme_minimal()+
+  theme(legend.position = "none")
+```
+
+---

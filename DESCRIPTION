@@ -11,6 +11,22 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
     dplyr,
-    purrr
+    purrr,
+    ggplot2,
+    patchwork,
+    broom,
+    edomex,
+    forcats,
+    ggrepel,
+    ggsankey,
+    glue,
+    rlang,
+    scales,
+    stringr,
+    tidyr,
+    stats,
+    infer
 URL: https://github.com/hectorchavezgaro44/aelectoral
 BugReports: https://github.com/hectorchavezgaro44/aelectoral/issues
+Depends: 
+    R (>= 2.10)
