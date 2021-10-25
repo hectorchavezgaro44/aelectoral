@@ -1,5 +1,13 @@
 
 
+#' Title
+#'
+#' @param bd
+#'
+#' @return
+#' @export
+#'
+#' @examples
 relativizar_censo <- function(bd){
   diccionario_censo20 <- diccionario_censo20 %>%
                          filter(!is.na(denominador),
