@@ -213,7 +213,9 @@ graficar_sankey_ganadores <- function(bd, eleccion, grupo){
 
 
 #' Title
-#'
+#' grafica una cloropeta con la distribución del apoyo del partido solicitado.
+#' una vez coloreada la sección se hace un degradado en función de la intensidad con la que dicho partido resultó ganador.
+#' Es decir, se colorea más fuerte mientras mayor haya sido la victoria y menos fuerte si fue una sección muy competida.
 #' @param bd base de datos con resultados electorales
 #' @param shp archivo .shp con el polígono del nivel de observación correspondiente
 #' @param colores_nombrados vector compuesto con los nombres de partidos y colores que le corresponden
@@ -263,7 +265,7 @@ graficar_cloropeta <- function(bd, shp, colores_nombrados, eleccion, grupo){
 
 
 #' Title
-#'
+#' Gráfica de líneas con el total de votos comparándolos entre elecciones.
 #' @param bd base de datos con resultados electorales
 #' @param colores_nombrados vector compuesto con los nombres de partidos y colores que le corresponden
 #' @param eleccion elección o vector de elecciones de la cual se van a obtener los ganadores
@@ -323,6 +325,17 @@ graficar_totales_eleccion <- function(bd, colores_nombrados, eleccion, grupo=NUL
 
 
 
+#' Title
+#'
+#' @param bd base con resultados electorales y una columna adicional con el ganador de cada sección
+#' @param ganador partido del que se busca analizar la independencia de su resultado
+#' @param eleccion elección elegida para analizar
+#' @param ... variables del censo de las que se busca analizar la independencia
+#'
+#' @return
+#' @export
+#'
+#' @examples
 probar_independencia_ganador <-function(bd, ganador, eleccion, ...){
   bd <- bd %>% mutate(triunfo=as.factor(!!sym(glue::glue("ganador_{eleccion}"))==ganador))
   dots <- enquos(...)
