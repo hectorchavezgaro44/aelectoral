@@ -365,7 +365,7 @@ probar_independencia_ganador <-function(bd, ganador, eleccion, ...){
 #'
 #' @param bd
 #' @param eleccion
-#' @param colores_nombrados
+#' @param colores_nombrados vector compuesto con los nombres de partidos y colores que le corresponden
 #' @param grupo
 #' @param saturacion
 #'
