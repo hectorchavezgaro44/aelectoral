@@ -2,7 +2,7 @@
 
 #' Title
 #'
-#' @param bd
+#' @param bd base de datos electoral
 #'
 #' @return
 #' @export

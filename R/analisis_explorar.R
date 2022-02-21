@@ -245,7 +245,7 @@ graficar_cloropeta <- function(bd, shp, colores_nombrados, eleccion, grupo){
   res <- bd %>%
     split(list(.$partido,.$eleccion, .$año)) %>%
     map(~{
-      bd <- left_join(mapa,
+      bd <- left_join(shp,
                       .x,by="seccion") %>%
         filter(!is.na(votos))
 
