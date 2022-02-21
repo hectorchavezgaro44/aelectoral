@@ -25,7 +25,10 @@ Imports:
     stringr,
     tidyr,
     stats,
-    infer
+    infer,
+    shades,
+    grDevices,
+    leaflet
 URL: https://github.com/hectorchavezgaro44/aelectoral
 BugReports: https://github.com/hectorchavezgaro44/aelectoral/issues
 Depends: 

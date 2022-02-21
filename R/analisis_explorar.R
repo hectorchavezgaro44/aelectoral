@@ -363,11 +363,11 @@ probar_independencia_ganador <-function(bd, ganador, eleccion, ...){
 
 #' Title
 #'
-#' @param bd
-#' @param eleccion
+#' @param bd base con resultados electorales y una columna adicional con el ganador de cada sección
+#' @param eleccion elección elegida para analizar
 #' @param colores_nombrados vector compuesto con los nombres de partidos y colores que le corresponden
-#' @param grupo
-#' @param saturacion
+#' @param grupo nivel de observación de la gráfica (secciones, municipios, distritos)
+#' @param saturacion nivel de saturación de la paleta de color
 #'
 #' @return
 #' @export

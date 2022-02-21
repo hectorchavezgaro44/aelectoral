@@ -13,7 +13,15 @@ colorear_ganador_degradado(
 )
 }
 \arguments{
-\item{saturacion}{}
+\item{bd}{base con resultados electorales y una columna adicional con el ganador de cada sección}
+
+\item{eleccion}{elección elegida para analizar}
+
+\item{colores_nombrados}{vector compuesto con los nombres de partidos y colores que le corresponden}
+
+\item{grupo}{nivel de observación de la gráfica (secciones, municipios, distritos)}
+
+\item{saturacion}{nivel de saturación de la paleta de color}
 }
 \value{
 
