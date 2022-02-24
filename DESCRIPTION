@@ -28,7 +28,8 @@ Imports:
     infer,
     shades,
     grDevices,
-    leaflet
+    leaflet,
+    tidytable
 URL: https://github.com/hectorchavezgaro44/aelectoral
 BugReports: https://github.com/hectorchavezgaro44/aelectoral/issues
 Depends: 
