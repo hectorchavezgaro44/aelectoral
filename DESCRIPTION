@@ -15,7 +15,6 @@ Imports:
     ggplot2,
     patchwork,
     broom,
-    edomex,
     forcats,
     ggrepel,
     ggsankey,
