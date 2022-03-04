@@ -15,7 +15,6 @@ Imports:
     ggplot2,
     patchwork,
     broom,
-    edomex,
     forcats,
     ggrepel,
     ggsankey,
@@ -28,7 +27,8 @@ Imports:
     infer,
     shades,
     grDevices,
-    leaflet
+    leaflet,
+    tidytable
 URL: https://github.com/hectorchavezgaro44/aelectoral
 BugReports: https://github.com/hectorchavezgaro44/aelectoral/issues
 Depends: 
