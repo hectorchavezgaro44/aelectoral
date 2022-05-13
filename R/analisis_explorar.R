@@ -78,7 +78,7 @@ calcular_votos_relativos <- function(bd, partido, eleccion, grupo){
 #' @import dplyr purrr
 #' @examples
 calcular_votos_totales <- function(bd, partido, eleccion, grupo=NULL){
-  res <- bd %>% {if(!is_null(grupo)) bd %>% group_by({{grupo}}) else .} %>%
+  res <- bd %>% {if(!rlang::quo_is_null(enquo(grupo))) bd %>% group_by({{grupo}}) else .} %>%
     summarise(across(matches(cross(list(partido, eleccion)) %>%
                                map_chr(.f = ~.x %>% unlist() %>% paste(collapse="_")) %>%
                                paste("ele",., sep="_")),
