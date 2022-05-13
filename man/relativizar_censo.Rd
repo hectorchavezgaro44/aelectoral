@@ -7,7 +7,7 @@
 relativizar_censo(bd)
 }
 \arguments{
-\item{bd}{}
+\item{bd}{base de datos electoral}
 }
 \value{
 
