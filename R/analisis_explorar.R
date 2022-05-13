@@ -275,50 +275,31 @@ graficar_cloropeta <- function(bd, shp, colores_nombrados, eleccion, grupo){
 #' @export
 #'
 #' @examples
-graficar_totales_eleccion <- function(bd, colores_nombrados, eleccion, grupo=NULL){
+graficar_totales_eleccion <- function (bd, colores_nombrados, eleccion, grupo = NULL)
+{
   partido <- names(colores_nombrados)
-  bd <- calcular_votos_totales(bd=bd,
-                               partido=partido,
-                               eleccion=eleccion,
-                               grupo = grupo)
-  bd <- bd %>%  pivot_longer(cols = starts_with("ele"),
-                             names_to = c("partido","eleccion", "año"),
-                             names_prefix = "ele_",
-                             names_sep = "_",
-                             values_to = "resultado"
-  ) %>%
-    mutate(eleccion=case_when(eleccion=="df" ~ "DF",
-                              eleccion=="dl" ~ "DL",
-                              eleccion=="pm" ~ "PM",
-                              eleccion=="gb" ~ "GB",
-                              eleccion=="pr" ~ "PR"),
-           eleccion=paste(eleccion, año, sep=" "),
-           eleccion=forcats::fct_relevel(eleccion, c("GB 17",
-                                                     "DF 18",
-                                                     "DL 18",
-                                                     "PM 18",
-                                                     "PR 18",
-                                                     "DF 21",
-                                                     "DL 21",
-                                                     "PM 21")))
-  grafica <- bd %>%
-    ggplot() +
-    geom_line(aes(x=eleccion,
-                  y=resultado,
-                  color=partido,
-                  group=partido),alpha=.9) +
-    geom_point(aes(x=eleccion,
-                   y=resultado,
-                   color=partido,
-                   group=eleccion)) +
-    scale_color_manual(values = colores_nombrados) +
+
+  bd <- bd %>% pivot_longer(cols = starts_with("ele"),
+                            names_to = c("partido",
+                                         "eleccion", "año"), names_prefix = "ele_", names_sep = "_",
+                            values_to = "resultado") %>%
+    mutate(eleccion = toupper(eleccion),
+           eleccion = paste(eleccion, año, sep = " "),
+           eleccion = forcats::fct_relevel(eleccion,
+                                           c("GB 17", "DF 18", "DL 18", "PM 18", "PR 18", "DF 21",
+                                             "DL 21", "PM 21"))
+    )
+  grafica <- bd %>% ggplot(aes(x = eleccion,
+                               y = resultado, group = partido)) +
+    geom_line(aes(color = partido), alpha = 0.9) +
+    geom_point(aes(group = eleccion, color = partido)) + scale_color_manual(values = colores_nombrados) +
     scale_y_continuous(label = scales::comma) +
     geom_text(aes(x = eleccion,
-                  y=resultado,
-                  label = scales::comma(round(resultado, 0))),
-              vjust=0,nudge_y = 1e4) +
-    labs(x="Elección", y="Total de votos", color="Partido")
+                  y = resultado, label = scales::comma(round(resultado, 0))), vjust = 0, nudge_y = 10000) + labs(x = "Elección",
+                                                                                                                 y = "Total de votos", color = "Partido")
+  return(grafica)
 }
+
 
 
 
