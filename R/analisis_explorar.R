@@ -103,7 +103,7 @@ ganador_eleccion <- function(bd, eleccion){
                                    -contains("_nominal_") &
                                    -contains("_total_")),
                           ~ names(c(...)[which.max(c(...))])),
-           ganador =stringr::str_remove(string = ganador, "ele_") %>%
+           ganador =stringr::str_remove(string = ganador, "ele_|cand_") %>%
              stringr::str_remove(string = ., pattern = glue::glue("_{eleccion}"))
     ) %>%
     rename("ganador_{eleccion}":=ganador) %>%
@@ -177,10 +177,10 @@ crear_mapa_electoral <- function(bd,
 #' @export
 #'
 #' @examples
-graficar_sankey_ganadores <- function(bd, eleccion, grupo){
-  colores_partidos <- c("mc"="#fd8204", "morena"="#BF3722",
-                        "pan"="#2260BF", "prd"="#ffde00",
-                        "pri"="#23A95D", "pvem"="#AEF359", "Otros"="grey")
+graficar_sankey_ganadores <- function(bd, eleccion, grupo, colores_partidos = c("mc"="#fd8204", "morena"="#BF3722",
+                                                                               "pan"="#2260BF", "prd"="#ffde00",
+                                                                               "pri"="#23A95D", "pvem"="#AEF359", "Otros"="grey")){
+
   bd <- eleccion %>%
     map(~bd %>% ganador_eleccion(eleccion = .x)) %>%
     reduce(full_join) %>%
