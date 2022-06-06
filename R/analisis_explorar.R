@@ -177,7 +177,7 @@ crear_mapa_electoral <- function(bd,
 #' @export
 #'
 #' @examples
-graficar_sankey_ganadores <- function(bd, eleccion, grupo, colores_partidos = c("mc"="#fd8204", "morena"="#BF3722",
+graficar_sankey_ganadores <- function(bd, eleccion, grupo, n = 4, colores_partidos = c("mc"="#fd8204", "morena"="#BF3722",
                                                                                "pan"="#2260BF", "prd"="#ffde00",
                                                                                "pri"="#23A95D", "pvem"="#AEF359", "Otros"="grey")){
 
@@ -194,8 +194,8 @@ graficar_sankey_ganadores <- function(bd, eleccion, grupo, colores_partidos = c(
                   stringr::str_to_upper() %>%
                   stringr::str_replace(pattern = "_", replacement = "-")) %>%
     ggsankey::make_long(-{{grupo}}) %>%
-    mutate(node=forcats::fct_lump(node, n=4,other_level = "Otros"),
-           next_node=forcats::fct_lump(next_node, n=4,other_level = "Otros"),
+    mutate(node=forcats::fct_lump(node, n=n,other_level = "Otros"),
+           next_node=forcats::fct_lump(next_node, n=n,other_level = "Otros"),
     )
   ggplot(bd, aes(x = x,
                  next_x = next_x,
