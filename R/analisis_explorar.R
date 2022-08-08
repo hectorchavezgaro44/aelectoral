@@ -199,7 +199,7 @@ graficar_sankey_ganadores <- function(bd, elecciones, unidad_analisis){
                  fill = factor(node))) +
     geom_sankey(flow.alpha=.5) +
     scale_fill_manual(values = colores_partidos, name="Partidos")+
-    scale_color_manual(values = colores_partidos, guide=F)
+    scale_color_manual(values = colores_partidos, guide="none")
 
 
 }
