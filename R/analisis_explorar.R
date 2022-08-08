@@ -177,25 +177,19 @@ crear_mapa_electoral <- function(bd,
 #' @export
 #'
 #' @examples
-graficar_sankey_ganadores <- function(bd, eleccion, grupo){
-  colores_partidos <- c("mc"="#fd8204", "morena"="#BF3722",
-                        "pan"="#2260BF", "prd"="#ffde00",
-                        "pri"="#23A95D", "pvem"="#AEF359", "Otros"="grey")
-  bd <- eleccion %>%
+graficar_sankey_ganadores <- function(bd, elecciones, unidad_analisis){
+  bd <- elecciones %>%
     map(~bd %>% ganador_eleccion(eleccion = .x)) %>%
-    reduce(full_join) %>%
-    na.omit()
-
-  bd <- bd %>%
-    select({{grupo}}, starts_with("ganador_"))
+    reduce(full_join)
+  bd <- bd %>% select({{unidad_analisis}}, starts_with("ganador_"))
   bd <- bd %>%
     rename_with(.cols = starts_with("ganador_"),
                 .fn = ~stringr::str_remove(.x,"ganador_") %>%
                   stringr::str_to_upper() %>%
                   stringr::str_replace(pattern = "_", replacement = "-")) %>%
-    ggsankey::make_long(-{{grupo}}) %>%
-    mutate(node=forcats::fct_lump(node, n=4,other_level = "Otros"),
-           next_node=forcats::fct_lump(next_node, n=4,other_level = "Otros"),
+    make_long(-{{unidad_analisis}}) %>%
+    mutate(node=forcats::fct_lump(node, n=6,other_level = "Otros"),
+           next_node=forcats::fct_lump(next_node, n=6,other_level = "Otros"),
     )
   ggplot(bd, aes(x = x,
                  next_x = next_x,
@@ -203,13 +197,12 @@ graficar_sankey_ganadores <- function(bd, eleccion, grupo){
                  next_node = next_node,
                  color =factor(node),
                  fill = factor(node))) +
-    ggsankey::geom_sankey(flow.alpha=.5)+
+    geom_sankey(flow.alpha=.5) +
     scale_fill_manual(values = colores_partidos, name="Partidos")+
     scale_color_manual(values = colores_partidos, guide=F)
 
 
 }
-
 
 
 #' Title
