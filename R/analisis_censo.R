@@ -1,5 +1,3 @@
-
-
 #' Title
 #'
 #' @param bd base de datos electoral
